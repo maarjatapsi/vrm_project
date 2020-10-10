@@ -83,21 +83,21 @@ class BookingIndex extends AbstractController
 
                 $entityManager = $this->getDoctrine()->getManager();
 
-                $bookings = new Bookings();
+                $booking = new Bookings();
 
-                $bookings->setFirstName($data['firstName']);
-                $bookings->setLastName($data['lastName']);
-                $bookings->setPhone($data['phone']);
-                $bookings->setEmail($data['email']);
-                $bookings->setBirthdate(new \DateTime($data['birthday']->format('Y-m-d')));
-                $bookings->setStartDate(new \DateTime($data['startDate']->format('Y-m-d')));
-                $bookings->setEndDate(new \DateTime($data['endDate']->format('Y-m-d')));
-                $bookings->setArrivalTime(new \DateTime($data['arrivalTime']->format('H:i:s')));
-                $bookings->setNumberOfPeople($data['nrOfPeople']);
-                $bookings->setPayingMethod($data['payingMethod']);
-                $bookings->setAdditionaInformation($data['additionalInformation']);
+                $booking->setFirstName($data['firstName']);
+                $booking->setLastName($data['lastName']);
+                $booking->setPhone($data['phone']);
+                $booking->setEmail($data['email']);
+                $booking->setBirthdate(new \DateTime($data['birthday']->format('Y-m-d')));
+                $booking->setStartDate(new \DateTime($data['startDate']->format('Y-m-d')));
+                $booking->setEndDate(new \DateTime($data['endDate']->format('Y-m-d')));
+                $booking->setArrivalTime(new \DateTime($data['arrivalTime']->format('H:i:s')));
+                $booking->setNumberOfPeople($data['nrOfPeople']);
+                $booking->setPayingMethod($data['payingMethod']);
+                $booking->setAdditionaInformation($data['additionalInformation']);
 
-                $entityManager->persist($bookings);
+                $entityManager->persist($booking);
 
                 $entityManager->flush();
 
@@ -114,6 +114,9 @@ class BookingIndex extends AbstractController
      */
     public function bookings()
     {
-        return $this->render('bookings/bookings.html.twig');
+        $repository = $this->getDoctrine()->getRepository(Bookings::class);
+        // look for *all* Product objects
+        $bookings = $repository->findAll();
+        return $this->render('bookings/list.html.twig', ['bookings' => $bookings]);
     }
 }

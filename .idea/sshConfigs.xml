@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig authType="PASSWORD" host="192.168.18.28" id="631ece1b-001f-42a0-b7f3-75218db07f44" port="22" customName="vrm" nameFormat="CUSTOM" username="user">
+        <option name="customName" value="vrm" />
+      </sshConfig>
+    </configs>
+  </component>
+</project>

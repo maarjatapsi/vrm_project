@@ -16,12 +16,20 @@ use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Bookings;
+
 class BookingIndex extends AbstractController
 {
     /**
      * @Route("/create_booking")
+     * @param $request
+     * @return Response
      */
-    public function create_booking()
+    public function create_booking(Request $request)
     {
         $form = $this->createFormBuilder()
             ->add('firstName', TextType::class, [
@@ -68,12 +76,41 @@ class BookingIndex extends AbstractController
             ->add('submit', SubmitType::class, ['label' => 'Create Booking'])
             ->getForm();
 
+        if($request->isMethod('POST')){
+            $form->submit($request->request->get($form->getName()));
+            if($form->isSubmitted() && $form->isvalid()){
+                $data = $form->getData();
+
+                $entityManager = $this->getDoctrine()->getManager();
+
+                $bookings = new Bookings();
+
+                $bookings->setFirstName($data['firstName']);
+                $bookings->setLastName($data['lastName']);
+                $bookings->setPhone($data['phone']);
+                $bookings->setEmail($data['email']);
+                $bookings->setBirthdate(new \DateTime($data['birthday']->format('Y-m-d')));
+                $bookings->setStartDate(new \DateTime($data['startDate']->format('Y-m-d')));
+                $bookings->setEndDate(new \DateTime($data['endDate']->format('Y-m-d')));
+                $bookings->setArrivalTime(new \DateTime($data['arrivalTime']->format('H:i:s')));
+                $bookings->setNumberOfPeople($data['nrOfPeople']);
+                $bookings->setPayingMethod($data['payingMethod']);
+                $bookings->setAdditionaInformation($data['additionalInformation']);
+
+                $entityManager->persist($bookings);
+
+                $entityManager->flush();
+
+                return $this->redirectToRoute('bookings');
+            }
+        }
+
         return $this->render('bookings/create_booking.html.twig', [
             'form' => $form->createView(),
         ]);
     }
     /**
-     * @Route("/bookings")
+     * @Route("/bookings", name="bookings")
      */
     public function bookings()
     {
